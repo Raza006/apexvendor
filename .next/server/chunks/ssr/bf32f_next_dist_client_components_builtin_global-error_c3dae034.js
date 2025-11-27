@@ -1,3 +1,0 @@
-module.exports=[52442,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(39508);a.n(d("[project]/OneDrive/Desktop/Loids-Stan/node_modules/next/dist/client/components/builtin/global-error.js <module evaluation>"))},56968,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(39508);a.n(d("[project]/OneDrive/Desktop/Loids-Stan/node_modules/next/dist/client/components/builtin/global-error.js"))},53999,a=>{"use strict";a.i(52442);var b=a.i(56968);a.n(b)}];
-
-//# sourceMappingURL=bf32f_next_dist_client_components_builtin_global-error_c3dae034.js.map
