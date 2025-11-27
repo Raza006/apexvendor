@@ -1,0 +1,13 @@
+__turbopack_load_page_chunks__("/_app", [
+  "static/chunks/bf32f_next_dist_compiled_da3920b1._.js",
+  "static/chunks/bf32f_next_dist_shared_lib_9a8b5026._.js",
+  "static/chunks/bf32f_next_dist_client_a0479822._.js",
+  "static/chunks/bf32f_next_dist_1e43ab96._.js",
+  "static/chunks/bf32f_next_app_ea903b5e.js",
+  "static/chunks/[next]_entry_page-loader_ts_e5d760d5._.js",
+  "static/chunks/bf32f_react-dom_76fb8a05._.js",
+  "static/chunks/bf32f_185d006c._.js",
+  "static/chunks/[root-of-the-server]__d5491ef0._.js",
+  "static/chunks/OneDrive_Desktop_Loids-Stan_pages__app_2da965e7._.js",
+  "static/chunks/turbopack-OneDrive_Desktop_Loids-Stan_pages__app_80d0d795._.js"
+])
