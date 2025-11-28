@@ -31,6 +31,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
   }
 
+  // Handle raw PaymentIntent (Custom Element) OR Checkout Session (old embedded)
+  if (event.type === "payment_intent.succeeded") {
+    const paymentIntent = event.data.object as any;
+    const productId = paymentIntent.metadata?.productId;
+    const product = products.find((p) => p.id === productId);
+    
+    // PaymentIntent doesn't always have email directly on it if not collected via Link or customer object
+    // But we can try to get receipt_email
+    const email = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email;
+
+    if (email && product) {
+      const downloadLink = `${process.env.NEXT_PUBLIC_URL}/access/${productId}`;
+      await sendOrderEmail(email, product.name, downloadLink);
+    } else {
+       console.log("Payment succeeded but missing email or product ID in metadata");
+    }
+  }
+
+  // Keep this for backward compatibility if needed
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as any;
     
@@ -39,7 +58,6 @@ export async function POST(request: Request) {
     const product = products.find((p) => p.id === productId);
 
     if (email && product) {
-      // Generate link (Update this logic if you have real file hosting)
       const downloadLink = `${process.env.NEXT_PUBLIC_URL}/access/${productId}`;
       await sendOrderEmail(email, product.name, downloadLink);
     }

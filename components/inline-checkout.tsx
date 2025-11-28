@@ -4,10 +4,9 @@ import { Product } from "@/lib/products";
 import { Loader2, Zap } from "lucide-react";
 import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import {
-  EmbeddedCheckoutProvider,
-  EmbeddedCheckout,
-} from "@stripe/react-stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import { CheckoutForm } from "./checkout-form";
+import { Appearance } from "@stripe/stripe-js";
 
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
@@ -22,9 +21,9 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Create a Checkout Session as soon as the component mounts
+    // Create a PaymentIntent as soon as the component mounts
     setLoading(true);
-    fetch("/api/checkout_embedded", {
+    fetch("/api/create-payment-intent", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,10 +38,39 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error creating checkout session:", err);
+        console.error("Error creating payment intent:", err);
         setLoading(false);
       });
   }, [product.id]);
+
+  // Custom styling to match "Apex Vendor" theme perfectly
+  const appearance: Appearance = {
+    theme: 'night',
+    variables: {
+      colorPrimary: '#3b82f6', // blue-500
+      colorBackground: '#0a0a0a', // Match card bg
+      colorText: '#ededed', // Match foreground
+      colorDanger: '#ef4444',
+      fontFamily: 'var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif',
+      spacingUnit: '4px',
+      borderRadius: '12px',
+    },
+    rules: {
+      '.Input': {
+        backgroundColor: '#000000', // Darker input bg
+        border: '1px solid #262626', // Neutral-800 border
+        boxShadow: 'none',
+      },
+      '.Input:focus': {
+        border: '1px solid #3b82f6', // Blue border on focus
+        boxShadow: '0 0 0 1px #3b82f6',
+      },
+      '.Label': {
+        fontWeight: '500',
+        color: '#a3a3a3', // Neutral-400
+      }
+    }
+  };
 
   if (loading && !clientSecret) {
     return (
@@ -60,16 +88,13 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
         <h3 className="font-bold text-lg">Secure Checkout</h3>
       </div>
       
-      {clientSecret && (
-        <EmbeddedCheckoutProvider
-          stripe={stripePromise}
-          options={{ clientSecret, theme: 'night' } as any}
-        >
-          <div className="min-h-[400px]">
-             <EmbeddedCheckout className="w-full" />
-          </div>
-        </EmbeddedCheckoutProvider>
-      )}
+      <div className="p-6">
+        {clientSecret && (
+          <Elements options={{ clientSecret, appearance }} stripe={stripePromise}>
+            <CheckoutForm />
+          </Elements>
+        )}
+      </div>
     </div>
   );
 }
