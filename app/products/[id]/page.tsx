@@ -34,7 +34,7 @@ export default function ProductPage() {
           Back to all vendors
         </Link>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-10">
           {/* Left: Image */}
           <div className="relative w-full aspect-square bg-neutral-100 dark:bg-neutral-800 rounded-2xl border border-border overflow-hidden">
             <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse">
@@ -94,13 +94,17 @@ export default function ProductPage() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
 
-            {/* Inline Checkout Form Replaces Modal Button */}
-            <div className="flex flex-col gap-4">
+        {/* Full Width Centered Checkout Section */}
+        <div className="w-full border-t border-border pt-10 mb-10">
+           <div className="max-w-2xl mx-auto">
+              <h2 className="text-2xl font-bold text-center mb-6">Secure Checkout</h2>
               <InlineCheckout product={product} />
               
               {/* IMPORTANT DISCLAIMER - Blue version, moved under checkout */}
-              <div className="p-4 border border-blue-500/30 bg-blue-500/10 rounded-xl flex gap-3 items-start mt-2">
+              <div className="p-4 border border-blue-500/30 bg-blue-500/10 rounded-xl flex gap-3 items-start mt-6">
                 <AlertCircle size={20} className="text-blue-400 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-neutral-300">
                   <p className="font-bold text-blue-400 mb-1">Didn't receive your link?</p>
@@ -111,11 +115,10 @@ export default function ProductPage() {
                 </div>
               </div>
 
-              <p className="text-center text-xs text-neutral-500">
+              <p className="text-center text-xs text-neutral-500 mt-4">
                 <span className="font-bold">73 people</span> are looking at this product right now.
               </p>
-            </div>
-          </div>
+           </div>
         </div>
 
         <div className="border-t border-border pt-10">

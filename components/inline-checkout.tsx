@@ -51,15 +51,18 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
       colorBackground: '#0a0a0a', // Match card bg
       colorText: '#ededed', // Match foreground
       colorDanger: '#ef4444',
-      fontFamily: 'Space Grotesk, system-ui, sans-serif', // Simplified font stack
-      spacingUnit: '4px',
+      fontFamily: 'Space Grotesk, system-ui, sans-serif', // Font stack matching globals.css
+      spacingUnit: '5px', // Slightly more spacious
       borderRadius: '12px',
+      fontSizeBase: '16px', // Explicitly set font size
     },
     rules: {
       '.Input': {
-        backgroundColor: '#000000', // Darker input bg
+        backgroundColor: '#050505', // Darker input bg
         border: '1px solid #262626', // Neutral-800 border
         boxShadow: 'none',
+        paddingTop: '12px',
+        paddingBottom: '12px',
       },
       '.Input:focus': {
         border: '1px solid #3b82f6', // Blue border on focus
@@ -68,6 +71,7 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
       '.Label': {
         fontWeight: '500',
         color: '#a3a3a3', // Neutral-400
+        marginBottom: '6px',
       }
     }
   };
@@ -98,7 +102,7 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
         <h3 className="font-bold text-lg">Secure Checkout</h3>
       </div>
       
-      <div className="p-6">
+      <div className="p-6 md:p-8"> {/* Increased padding for desktop */}
         {clientSecret && (
           <Elements options={options} stripe={stripePromise}>
             <CheckoutForm amount={product.price} />
