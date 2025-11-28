@@ -8,7 +8,11 @@ import {
 } from "@stripe/react-stripe-js";
 import { Loader2, Lock, AlertCircle } from "lucide-react";
 
-export function CheckoutForm() {
+interface CheckoutFormProps {
+  amount: number;
+}
+
+export function CheckoutForm({ amount }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -77,7 +81,7 @@ export function CheckoutForm() {
         ) : (
           <>
             <Lock size={18} />
-            Pay Now
+            Pay ${amount.toFixed(2)}
           </>
         )}
       </button>
@@ -89,4 +93,3 @@ export function CheckoutForm() {
     </form>
   );
 }
-

@@ -51,7 +51,7 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
       colorBackground: '#0a0a0a', // Match card bg
       colorText: '#ededed', // Match foreground
       colorDanger: '#ef4444',
-      fontFamily: 'var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif',
+      fontFamily: 'Space Grotesk, system-ui, sans-serif', // Simplified font stack
       spacingUnit: '4px',
       borderRadius: '12px',
     },
@@ -72,6 +72,16 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
     }
   };
 
+  const options = {
+    clientSecret,
+    appearance,
+    fonts: [
+      {
+        cssSrc: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap',
+      },
+    ],
+  };
+
   if (loading && !clientSecret) {
     return (
       <div className="bg-card border border-border rounded-2xl p-12 shadow-lg flex flex-col items-center justify-center text-neutral-500 min-h-[400px]">
@@ -90,8 +100,8 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
       
       <div className="p-6">
         {clientSecret && (
-          <Elements options={{ clientSecret, appearance }} stripe={stripePromise}>
-            <CheckoutForm />
+          <Elements options={options} stripe={stripePromise}>
+            <CheckoutForm amount={product.price} />
           </Elements>
         )}
       </div>
