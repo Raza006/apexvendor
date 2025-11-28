@@ -20,12 +20,30 @@ export function CheckoutModal({ product, onClose }: CheckoutModalProps) {
     setLoading(true);
     setError("");
 
-    // Temporarily disabled as per request
-    // In a real scenario, this would call the API endpoint
-    setTimeout(() => {
-      setError("Checkout is currently disabled for maintenance. Please try again later.");
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          email: email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || "Failed to create checkout session");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Failed to redirect to payment provider. Please try again.");
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (

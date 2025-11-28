@@ -1,71 +1,75 @@
 "use client";
 
 import { Product } from "@/lib/products";
-import { Lock, CreditCard, Loader2, Zap } from "lucide-react";
-import { useState } from "react";
+import { Loader2, Zap } from "lucide-react";
+import { useState, useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  EmbeddedCheckoutProvider,
+  EmbeddedCheckout,
+} from "@stripe/react-stripe-js";
+
+// Make sure to call loadStripe outside of a component’s render to avoid
+// recreating the Stripe object on every render.
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface InlineCheckoutProps {
   product: Product;
 }
 
 export function InlineCheckout({ product }: InlineCheckoutProps) {
-  const [email, setEmail] = useState("");
+  const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const handleStripeCheckout = async () => {
-    if (!email) return;
+  useEffect(() => {
+    // Create a Checkout Session as soon as the component mounts
     setLoading(true);
-    setError("");
+    fetch("/api/checkout_embedded", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        productId: product.id,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setClientSecret(data.clientSecret);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error creating checkout session:", err);
+        setLoading(false);
+      });
+  }, [product.id]);
 
-    // Temporarily disabled as per request
-    // In a real scenario, this would call the API endpoint
-    setTimeout(() => {
-      setError("Checkout is currently disabled for maintenance. Please try again later.");
-      setLoading(false);
-    }, 1000);
-  };
+  if (loading && !clientSecret) {
+    return (
+      <div className="bg-card border border-border rounded-2xl p-12 shadow-lg flex flex-col items-center justify-center text-neutral-500 min-h-[400px]">
+        <Loader2 className="animate-spin mb-4 text-blue-500" size={32} />
+        <p>Loading secure checkout...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-6 shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
-        <Zap size={20} className="fill-yellow-500 text-yellow-500" />
-        Instant Checkout
-      </h3>
-      
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1.5">Email Address</label>
-          <input 
-            type="email" 
-            placeholder="you@example.com"
-            className="w-full p-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-neutral-500 transition-shadow"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <p className="text-xs text-neutral-500 mt-1.5">Your vendor link will be sent here immediately.</p>
-        </div>
-
-        {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
-
-        <button 
-          onClick={handleStripeCheckout}
-          disabled={!email || loading}
-          className="w-full py-4 bg-foreground text-background rounded-xl font-bold text-lg hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md flex items-center justify-center gap-2"
-        >
-          {loading ? <Loader2 className="animate-spin" size={20} /> : <CreditCard size={20} />}
-          <span>Pay ${product.price.toFixed(2)}</span>
-        </button>
-
-        <div className="flex items-center justify-center gap-2 text-xs text-neutral-400 pt-2">
-          <Lock size={12} />
-          <span>Secured by Stripe 256-bit encryption</span>
-        </div>
+    <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="p-4 border-b border-border bg-neutral-900/50 flex items-center gap-2">
+        <Zap size={18} className="fill-blue-500 text-blue-500" />
+        <h3 className="font-bold text-lg">Secure Checkout</h3>
       </div>
+      
+      {clientSecret && (
+        <EmbeddedCheckoutProvider
+          stripe={stripePromise}
+          options={{ clientSecret, theme: 'night' }}
+        >
+          <div className="min-h-[400px]">
+             <EmbeddedCheckout className="w-full" />
+          </div>
+        </EmbeddedCheckoutProvider>
+      )}
     </div>
   );
 }

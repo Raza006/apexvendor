@@ -10,6 +10,7 @@
   /* Define font-sans to use the Space Grotesk variable first */
   --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
+  /* Keyframes */
   @keyframes shine {
     0% { background-position: 150% center; }
     100% { background-position: -50% center; }
@@ -49,10 +50,10 @@
   --card: #0a0a0a;
   --card-foreground: #ededed;
   --border: #262626;
+  
+  /* New Theme Variables mapped to config (Manual sync for now, ideally would use CSS vars injected by JS if dynamic) */
+  /* We keep these hardcoded here for Tailwind v4 performance unless we move fully to style attributes */
 }
-
-/* Remove light mode overrides */
-/* @media (prefers-color-scheme: dark) is no longer needed since we default to dark */
 
 body {
   color: var(--foreground);

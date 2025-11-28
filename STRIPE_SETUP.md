@@ -1,78 +1,107 @@
-# Stripe Integration Guide for Apex Vendors
+# 🛒 COMPLETE STRIPE INTEGRATION GUIDE (STEP-BY-STEP)
 
-This guide explains how to connect your Stripe account to accept real payments and how to configure email sending.
+This guide assumes you have a **brand new, empty Stripe account** and need to connect it to your Apex Vendors store.
 
-## 1. Get Stripe Keys
+---
 
-1.  Go to [dashboard.stripe.com](https://dashboard.stripe.com/) and sign up/login.
-2.  Ensure you are in **Test Mode** (toggle in top right) for development.
-3.  Go to **Developers > API keys**.
-4.  Copy the `Publishable key` and `Secret key`.
+## 🛑 YOUR LIVE CREDENTIALS (BACKUP)
 
-## 2. Configure Environment Variables
+Store these securely. These are the keys you provided for the LIVE store.
 
-Create a file named `.env.local` in the root of your project folder (`Loids-Stan`) and add the keys:
+- **NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY**: `pk_live_...` (Provided previously)
+- **STRIPE_SECRET_KEY**: `sk_live_...` (Provided previously)
+- **STRIPE_WEBHOOK_SECRET**: `whsec_...` (Configured for `apexvendor.com`)
+- **RESEND_API_KEY**: `re_...`
 
-```env
-NEXT_PUBLIC_URL=http://localhost:3000
-STRIPE_SECRET_KEY=sk_test_...  <-- Paste Secret Key Here
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_... <-- Paste Publishable Key Here
-```
+---
 
-## 3. Set Up Webhook (For Email Delivery)
+## 1️⃣ DEPLOY TO VERCEL (FIRST DEPLOY)
 
-To test that emails send after payment locally, you need the Stripe CLI or a tunnel.
+Before we can set up the live webhook, your site needs to be on the internet.
 
-1.  Go to **Developers > Webhooks** in Stripe Dashboard.
-2.  Click **Add endpoint**.
-3.  Endpoint URL: `http://localhost:3000/api/webhook` (Note: for local dev, you need the CLI, see below).
-4.  Select events to listen to: `checkout.session.completed`.
-5.  Reveal the **Signing Secret** (`whsec_...`).
-6.  Add it to `.env.local`:
+1.  Go to [vercel.com](https://vercel.com) and log in.
+2.  Click **"Add New..."** -> **"Project"**.
+3.  Import your GitHub repository: `apexvendor`.
+4.  **Environment Variables**: You can skip this for the *very first* deploy, or add your **TEST** keys just to check if the build works.
+5.  Click **"Deploy"**.
+6.  Wait for it to finish. You will get a domain (e.g., `apexvendor.vercel.app`). **Copy this URL.**
 
-```env
-STRIPE_WEBHOOK_SECRET=whsec_...
-```
+---
 
-### Testing Webhooks Locally (Recommended)
-1.  Download Stripe CLI.
-2.  Run: `stripe listen --forward-to localhost:3000/api/webhook`
-3.  It will give you a webhook secret. Use THAT one in your `.env.local`.
+## 2️⃣ GET LIVE STRIPE KEYS
 
-## 4. Email Setup (Resend)
+*(Done - See Credentials Above)*
 
-To actually send emails, we use **Resend**.
+1.  Go to [dashboard.stripe.com](https://dashboard.stripe.com/).
+2.  **Toggle "Test Mode" OFF** (Top right corner). You are now in Live Mode.
+3.  Go to **Developers** -> **API Keys**.
+4.  **Copy** the `Publishable key` (starts with `pk_live_...`).
+5.  **Copy** the `Secret key` (starts with `sk_live_...`).
 
-1.  Go to [resend.com](https://resend.com) and sign up.
-2.  Get your API Key.
-3.  Add to `.env.local`:
+---
 
-```env
-RESEND_API_KEY=re_123...
-```
+## 3️⃣ SET UP LIVE WEBHOOK (CRITICAL FOR EMAILS)
 
-4.  **Important**: You must verify a domain to send to anyone. In test mode, you can only send to your own email address unless you verify a domain.
+This ensures customers get their email automatically after paying.
 
-## 5. Editing Email Content
+1.  In Stripe Dashboard (Live Mode), go to **Developers** -> **Webhooks**.
+2.  Click **"Add Endpoint"**.
+3.  **Endpoint URL**: Paste your Vercel URL + `/api/webhook`.
+    *   Example: `https://apexvendor.vercel.app/api/webhook`
+4.  **Select events**:
+    *   Click "Select events".
+    *   Search for and check: `checkout.session.completed`.
+    *   Click "Add events".
+5.  Click **"Add endpoint"**.
+6.  **Copy Signing Secret**:
+    *   On the new webhook page, look for "Signing secret" (top right).
+    *   Click "Reveal".
+    *   **Copy** the secret (starts with `whsec_...`).
 
-Open `lib/email-templates.ts`. You can edit the HTML and Subject line there easily.
+---
 
-## 6. Connecting Products
+## 4️⃣ CONFIGURE VERCEL ENVIRONMENT VARIABLES
 
-Currently, the code automatically creates a Stripe checkout session based on the price in `lib/products.ts`.
-You **do not** need to create products in Stripe manually for this code to work. The `api/checkout/route.ts` sends the product name and price directly to Stripe.
+Now we tell your live site to use the REAL keys.
 
-Just ensure the IDs in `lib/products.ts` are unique.
+1.  Go to your project settings on **Vercel**.
+2.  Click **"Settings"** -> **"Environment Variables"**.
+3.  Add the following variables (Copy/Paste your **LIVE** keys):
 
-## Summary of .env.local
+| Key | Value |
+| :--- | :--- |
+| `NEXT_PUBLIC_URL` | `https://apexvendor.vercel.app` (Your actual Vercel domain) |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | `pk_live_...` (From Step 2) |
+| `STRIPE_SECRET_KEY` | `sk_live_...` (From Step 2) |
+| `STRIPE_WEBHOOK_SECRET` | `whsec_...` (From Step 3) |
+| `RESEND_API_KEY` | `re_...` (Your Resend API Key) |
 
-Your `.env.local` file should look like this:
+4.  **IMPORTANT**: After adding these, go to the **"Deployments"** tab in Vercel.
+5.  Click the three dots `...` next to your latest deployment -> **"Redeploy"**.
+6.  This forces the site to rebuild with the new Live keys.
 
-```env
-NEXT_PUBLIC_URL=http://localhost:3000
-STRIPE_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-RESEND_API_KEY=re_...
-```
+---
 
+## 5️⃣ VERIFY DOMAIN (RESEND) - OPTIONAL BUT RECOMMENDED
+
+For emails to land in "Primary" instead of "Spam":
+
+1.  Go to [resend.com](https://resend.com) -> **Domains**.
+2.  Add your custom domain (if you have one, e.g., `apexvendors.com`).
+3.  Follow the instructions to add DNS records (CNAME/TXT) to your domain provider (GoDaddy, Namecheap, etc.).
+4.  Once verified, update `lib/email-templates.ts` line 42:
+    *   Change `'Apex Vendors <noreply@yourdomain.com>'` to your verified email.
+
+---
+
+## 6️⃣ TEST A REAL PURCHASE (FINAL STEP)
+
+1.  Open your Vercel URL.
+2.  Buy a cheap product (or create a $1 test product in code temporarily).
+3.  Use a **REAL credit card**.
+4.  Check if:
+    *   Payment goes through on Stripe.
+    *   You get redirected to the Success page.
+    *   You receive the email with the link.
+
+🚀 **YOU ARE NOW LIVE AND READY TO SELL.**
