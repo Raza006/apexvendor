@@ -63,7 +63,7 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
       {clientSecret && (
         <EmbeddedCheckoutProvider
           stripe={stripePromise}
-          options={{ clientSecret }}
+          options={{ clientSecret, theme: 'night' } as any}
         >
           <div className="min-h-[400px]">
              <EmbeddedCheckout className="w-full" />
