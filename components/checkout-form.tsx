@@ -18,6 +18,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
 
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  // Updated payment form with address handling
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
