@@ -64,22 +64,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
            onReady={() => setIsFormReady(true)}
            options={{ 
              layout: "tabs",
-             business: { name: "Apex Vendor" },
-             wallets: {
-               applePay: 'auto',
-               googlePay: 'auto'
-             },
-             fields: {
-               billingDetails: {
-                 name: 'auto',
-                 email: 'auto',
-                 phone: 'auto',
-                 address: 'auto'
-               }
-             },
-             terms: {
-               card: 'never'
-             }
+             business: { name: "Apex Vendor" }
            }} 
         />
       </div>
