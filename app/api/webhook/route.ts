@@ -37,26 +37,36 @@ export async function POST(request: Request) {
     const paymentIntent = event.data.object as any;
     console.log("Payment Intent ID:", paymentIntent.id);
     
-    // Get email - should be in receipt_email since we pass it in confirmPayment
-    const email = paymentIntent.receipt_email;
-    const productId = paymentIntent.metadata?.productId;
-    const product = products.find((p) => p.id === productId);
-    
-    console.log("📧 Email from receipt_email:", email);
-    console.log("📦 Product ID:", productId);
-    console.log("📦 Product found:", product?.name);
-    
-    // Try to get name from latest charge
+    // Get email - try multiple sources
+    let email = paymentIntent.receipt_email;
     let customerName;
-    if (paymentIntent.latest_charge) {
+    
+    // If no receipt_email, try to get from latest charge
+    if (!email && paymentIntent.latest_charge) {
+      try {
+        const charge = await stripe.charges.retrieve(paymentIntent.latest_charge as string);
+        email = charge.billing_details?.email;
+        customerName = charge.billing_details?.name;
+        console.log("📧 Got email from charge billing_details:", email);
+      } catch (err) {
+        console.error("Error fetching charge:", err);
+      }
+    } else if (paymentIntent.latest_charge) {
       try {
         const charge = await stripe.charges.retrieve(paymentIntent.latest_charge as string);
         customerName = charge.billing_details?.name;
-        console.log("👤 Customer name:", customerName);
       } catch (err) {
         console.error("Error fetching charge:", err);
       }
     }
+    
+    const productId = paymentIntent.metadata?.productId;
+    const product = products.find((p) => p.id === productId);
+    
+    console.log("📧 Email:", email);
+    console.log("📦 Product ID:", productId);
+    console.log("📦 Product found:", product?.name);
+    console.log("👤 Customer name:", customerName)
 
     if (email && product) {
       console.log("✅ All data present, sending email...");
