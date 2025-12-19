@@ -10,9 +10,10 @@ import { Loader2, Lock, AlertCircle, Mail } from "lucide-react";
 
 interface CheckoutFormProps {
   amount: number;
+  clientSecret?: string;
 }
 
-export function CheckoutForm({ amount }: CheckoutFormProps) {
+export function CheckoutForm({ amount, clientSecret }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -35,21 +36,39 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/success?email=${encodeURIComponent(email)}`,
-        payment_method_data: {
-          billing_details: {
-            email: email,
-            name: name || undefined,
+    try {
+      // Update the payment intent with the email BEFORE confirming
+      if (clientSecret) {
+        const paymentIntentId = clientSecret.split('_secret_')[0];
+        
+        console.log("📧 Updating payment intent with email:", email);
+        await fetch('/api/update-payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentIntentId, email, name })
+        });
+      }
+
+      // Now confirm the payment
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/success`,
+          payment_method_data: {
+            billing_details: {
+              email: email,
+              name: name || undefined,
+            },
           },
         },
-      },
-    });
+      });
 
-    if (error) {
-      setMessage(error.message || "An unexpected error occurred.");
+      if (error) {
+        setMessage(error.message || "An unexpected error occurred.");
+      }
+    } catch (err) {
+      console.error("Error in payment flow:", err);
+      setMessage("An unexpected error occurred.");
     }
 
     setIsLoading(false);

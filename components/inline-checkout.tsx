@@ -113,7 +113,7 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
         )}
         {clientSecret ? (
           <Elements options={options} stripe={stripePromise}>
-            <CheckoutForm amount={product.price} />
+            <CheckoutForm amount={product.price} clientSecret={clientSecret} />
           </Elements>
         ) : loading ? (
           <div className="text-center text-neutral-400">Loading payment form...</div>
