@@ -38,6 +38,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
           billing_details: {
             address: {
               country: 'US', // Default to US since we're not collecting address
+              postal_code: '00000', // Default postal code
             },
           },
         },
