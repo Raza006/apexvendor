@@ -48,10 +48,9 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
         id="payment-element"
         options={{ 
           layout: "tabs",
-          paymentMethodOrder: ['card'],
-          fields: {
+          defaultValues: {
             billingDetails: {
-              email: 'always',
+              email: '',
             }
           }
         }} 
