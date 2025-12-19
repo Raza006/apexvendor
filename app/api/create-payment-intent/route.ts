@@ -37,8 +37,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (error: any) {
     console.error("❌ Stripe PaymentIntent Error:", error);
+    console.error("❌ Error details:", {
+      message: error.message,
+      type: error.type,
+      code: error.code,
+      statusCode: error.statusCode,
+    });
     return NextResponse.json(
-      { error: error.message || "Internal Server Error" },
+      { 
+        error: error.message || "Internal Server Error",
+        details: error.type || "unknown_error"
+      },
       { status: 500 }
     );
   }
