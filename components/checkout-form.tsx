@@ -34,6 +34,13 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/success`,
+        payment_method_data: {
+          billing_details: {
+            address: {
+              country: 'US',
+            },
+          },
+        },
       },
     });
 
@@ -73,9 +80,12 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
                billingDetails: {
                  name: 'auto',     // Collect name
                  email: 'auto',    // Collect email - REQUIRED
-                 phone: 'never',   // Don't ask for phone
+                 phone: 'auto',    // Phone optional
                  address: 'never'  // No address
                }
+             },
+             terms: {
+               card: 'never'
              }
            }} 
         />
