@@ -5,7 +5,7 @@ import { sendOrderEmail } from "@/lib/email-templates";
 import { products } from "@/lib/products";
 
 export async function POST(request: Request) {
-  console.log("🔔 WEBHOOK CALLED!");
+  console.log("🔔 WEBHOOK CALLED! (Updated webhook URL)");
   
   const body = await request.text();
   const signature = (await headers()).get("Stripe-Signature") as string;
