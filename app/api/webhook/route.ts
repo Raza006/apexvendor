@@ -44,22 +44,27 @@ export async function POST(request: Request) {
     console.log("Product ID:", productId);
     console.log("Product found:", product?.name);
     
-    // Get the latest charge to extract billing details
+    // Get email from billing details
     let email = paymentIntent.receipt_email;
     let customerName;
     
-    // If no receipt_email, we need to fetch the charge with expanded payment_method
-    if (!email && paymentIntent.latest_charge) {
-      console.log("Fetching charge details for email...");
-      try {
-        const charge = await stripe.charges.retrieve(paymentIntent.latest_charge as string, {
-          expand: ['payment_method'],
-        });
-        email = charge.billing_details?.email || (charge.payment_method as any)?.billing_details?.email;
-        customerName = charge.billing_details?.name || (charge.payment_method as any)?.billing_details?.name;
-        console.log("Retrieved from charge:", { email, customerName });
-      } catch (err) {
-        console.error("Error fetching charge:", err);
+    // Try to get from charges array first
+    if (!email && paymentIntent.charges?.data?.[0]) {
+      const charge = paymentIntent.charges.data[0];
+      email = charge.billing_details?.email;
+      customerName = charge.billing_details?.name;
+      
+      // If still no email, try to fetch the payment method
+      if (!email && charge.payment_method) {
+        console.log("Fetching payment method for billing details...");
+        try {
+          const paymentMethod = await stripe.paymentMethods.retrieve(charge.payment_method as string);
+          email = paymentMethod.billing_details?.email;
+          customerName = customerName || paymentMethod.billing_details?.name;
+          console.log("Retrieved from payment method:", { email, customerName });
+        } catch (err) {
+          console.error("Error fetching payment method:", err);
+        }
       }
     }
     
