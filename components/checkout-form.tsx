@@ -105,7 +105,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
               billingDetails: {
                 email: 'never',
                 address: {
-                  country: 'never',
+                  country: 'auto',
                   postalCode: 'auto'
                 }
               }
