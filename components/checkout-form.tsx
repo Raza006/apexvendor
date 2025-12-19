@@ -38,6 +38,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
           billing_details: {
             address: {
               country: 'US',
+              postal_code: '00000',
             },
           },
         },
@@ -78,10 +79,16 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
              },
              fields: {
                billingDetails: {
-                 name: 'auto',     // Collect name
-                 email: 'auto',    // Collect email - REQUIRED
-                 phone: 'auto',    // Phone optional
-                 address: 'never'  // No address
+                 name: 'auto',
+                 email: 'auto',
+                 phone: 'auto',
+                 address: 'never'
+               }
+             },
+             defaultValues: {
+               billingDetails: {
+                 name: '',
+                 email: ''
                }
              },
              terms: {
