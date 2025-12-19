@@ -61,15 +61,20 @@ export async function POST(request: Request) {
     if (email && product) {
       console.log("✅ All data present, sending email...");
       const downloadLink = `${process.env.NEXT_PUBLIC_URL}/access/${productId}`;
-      await sendOrderEmail(
-        email, 
-        product.name, 
-        downloadLink, 
-        product.pdfFileName,
-        customerName || undefined,
-        product.vendorUrl
-      );
-      console.log("📧 Email sent successfully to:", email);
+      try {
+        await sendOrderEmail(
+          email, 
+          product.name, 
+          downloadLink, 
+          product.pdfFileName,
+          customerName || undefined,
+          product.vendorUrl
+        );
+        console.log("📧 Email sent successfully to:", email);
+      } catch (emailError: any) {
+        console.error("❌ Email sending failed:", emailError);
+        console.error("Email error details:", emailError?.message || emailError);
+      }
     } else {
        console.log("❌ Missing required data:");
        console.log("- Email:", email || "MISSING");
@@ -88,14 +93,19 @@ export async function POST(request: Request) {
 
     if (email && product) {
       const downloadLink = `${process.env.NEXT_PUBLIC_URL}/access/${productId}`;
-      await sendOrderEmail(
-        email, 
-        product.name, 
-        downloadLink, 
-        product.pdfFileName,
-        customerName,
-        product.vendorUrl
-      );
+      try {
+        await sendOrderEmail(
+          email, 
+          product.name, 
+          downloadLink, 
+          product.pdfFileName,
+          customerName,
+          product.vendorUrl
+        );
+        console.log("📧 Email sent successfully (checkout.session.completed)");
+      } catch (emailError: any) {
+        console.error("❌ Email sending failed (checkout.session.completed):", emailError);
+      }
     }
   }
 

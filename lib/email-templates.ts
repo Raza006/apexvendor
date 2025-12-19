@@ -84,6 +84,10 @@ export async function sendOrderEmail(
     const hasPDF = !!pdfFileName;
     const displayName = customerName || "Valued Customer";
 
+    console.log("📤 Preparing email for:", email);
+    console.log("📤 From: orders@apexsupplierlinks.com");
+    console.log("📤 Product:", productName);
+
     // Prepare email options
     const emailOptions: any = {
       from: 'Apex Vendors <orders@apexsupplierlinks.com>',
@@ -111,10 +115,14 @@ export async function sendOrderEmail(
       }
     }
 
-    await resend.emails.send(emailOptions);
+    const result = await resend.emails.send(emailOptions);
     console.log(`✅ Email sent to ${email} with ${pdfFileName ? 'PDF attachment' : 'no attachment'}`);
-  } catch (error) {
+    console.log(`✅ Resend result:`, result);
+  } catch (error: any) {
     console.error("❌ Failed to send email:", error);
+    console.error("❌ Error message:", error?.message);
+    console.error("❌ Error details:", JSON.stringify(error, null, 2));
+    throw error; // Re-throw so the webhook can log it
   }
 }
 
