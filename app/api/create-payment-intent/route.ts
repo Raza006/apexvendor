@@ -6,12 +6,17 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { productId } = body;
+    
+    console.log("🛒 Creating payment intent for product:", productId);
 
     const product = products.find((p) => p.id === productId);
 
     if (!product) {
+      console.log("❌ Product not found:", productId);
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
+    
+    console.log("✅ Product found:", product.name, "Price:", product.price);
 
     // Create a PaymentIntent with the order amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
@@ -25,10 +30,13 @@ export async function POST(request: Request) {
         productName: product.name,
       },
     });
+    
+    console.log("💳 Payment intent created:", paymentIntent.id);
+    console.log("📦 Metadata set:", paymentIntent.metadata);
 
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (error: any) {
-    console.error("Stripe PaymentIntent Error:", error);
+    console.error("❌ Stripe PaymentIntent Error:", error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
       { status: 500 }
