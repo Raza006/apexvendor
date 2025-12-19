@@ -69,12 +69,9 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
                billingDetails: {
                  email: 'auto',    // Email will be collected
                  phone: 'auto',    // Phone is optional
-                 address: 'never'  // No address needed
-               }
-             },
-             defaultValues: {
-               billingDetails: {
-                 email: ''
+                 address: {
+                   country: 'never', // Hide country selector (default to US)
+                 }
                }
              }
            }} 
