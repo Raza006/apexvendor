@@ -66,7 +66,7 @@ export async function POST(request: Request) {
         product.name, 
         downloadLink, 
         product.pdfFileName,
-        customerName,
+        customerName || undefined,
         product.vendorUrl
       );
       console.log("📧 Email sent successfully to:", email);
