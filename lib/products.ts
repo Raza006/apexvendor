@@ -5,6 +5,8 @@ export interface Product {
   originalPrice: number; // Made required for the fake discount effect
   description: string[];
   image: string;
+  pdfFileName?: string; // Optional: Name of the PDF file in /public/pdfs/
+  vendorUrl?: string; // Optional: Direct vendor link
 }
 
 export const products: Product[] = [
@@ -18,7 +20,8 @@ export const products: Product[] = [
       "Most USA Based",
       "Passing Serial"
     ],
-    image: "/assets/All Vendor.png"
+    image: "/assets/All Vendor.png",
+    pdfFileName: "elite-bundle-instructions.pdf"
   },
   {
     id: "hair-dryer",
@@ -28,7 +31,8 @@ export const products: Product[] = [
     description: [
       "3-7 Day USA Shipping"
     ],
-    image: "/assets/Dyson.png"
+    image: "/assets/Dyson.png",
+    vendorUrl: "https://x.alibaba.com/B13h9J?ck=minisite"
   },
   {
     id: "labu",
@@ -38,7 +42,8 @@ export const products: Product[] = [
     description: [
       "10 plus Days Shipping"
     ],
-    image: "/assets/Labubu.png"
+    image: "/assets/Labubu.png",
+    vendorUrl: "https://x.alibaba.com/B13h9J?ck=minisite"
   },
   {
     id: "max-supplier",
@@ -50,7 +55,8 @@ export const products: Product[] = [
       "USA Warehouse",
       "Device Care"
     ],
-    image: "/assets/Maxes.png"
+    image: "/assets/Maxes.png",
+    vendorUrl: "https://x.alibaba.com/xK7TdZX?ck=minisite"
   },
   {
     id: "moissanite",
@@ -64,7 +70,8 @@ export const products: Product[] = [
       "VVS Moissanite",
       "Shine Brighter than REAL Diamond"
     ],
-    image: "/assets/Moissanite.png"
+    image: "/assets/Moissanite.png",
+    vendorUrl: "https://www.alibaba.com/x/xozVU2T?ck=pdp"
   },
   {
     id: "shoes",
@@ -74,7 +81,8 @@ export const products: Product[] = [
     description: [
       "15 plus shoe variants, comes with boxes."
     ],
-    image: "/assets/Shoes.png"
+    image: "/assets/Shoes.png",
+    vendorUrl: "https://x.alibaba.com/xbjSpmK?ck=minisite"
   },
   {
     id: "clothing",
@@ -84,7 +92,8 @@ export const products: Product[] = [
     description: [
       "7 Clothing Vendors in one"
     ],
-    image: "/assets/Clothing Bundle.png"
+    image: "/assets/Clothing Bundle.png",
+    pdfFileName: "clothing-instructions.pdf"
   },
   {
     id: "pods",
@@ -96,7 +105,8 @@ export const products: Product[] = [
       "USA Warehouse",
       "1, 2, 3, 4, Pro, Max, etc"
     ],
-    image: "/assets/AirPods.png"
+    image: "/assets/AirPods.png",
+    vendorUrl: "https://x.alibaba.com/xWN66cN?ck=minisite"
   },
   {
     id: "cologne",
@@ -107,7 +117,8 @@ export const products: Product[] = [
       "Every single cologne in one vendor",
       "5-7 Day USA Shipping"
     ],
-    image: "/assets/Colognes.png"
+    image: "/assets/Colognes.png",
+    vendorUrl: "https://x.alibaba.com/xWN66cN?ck=minisite"
   },
   {
     id: "lulu",
@@ -117,6 +128,7 @@ export const products: Product[] = [
     description: [
       "6-10 Bussiness day shipping"
     ],
-    image: "/assets/Lululemon.png"
+    image: "/assets/Lululemon.png",
+    vendorUrl: "https://liaotu.en.alibaba.com/index.html?spm=a2700.details.0.0.26596f30wHPRVr&from=detail&productId=1601320892973"
   }
 ];

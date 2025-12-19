@@ -40,10 +40,18 @@ export async function POST(request: Request) {
     // PaymentIntent doesn't always have email directly on it if not collected via Link or customer object
     // But we can try to get receipt_email
     const email = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email;
+    const customerName = paymentIntent.charges?.data?.[0]?.billing_details?.name || undefined;
 
     if (email && product) {
       const downloadLink = `${process.env.NEXT_PUBLIC_URL}/access/${productId}`;
-      await sendOrderEmail(email, product.name, downloadLink);
+      await sendOrderEmail(
+        email, 
+        product.name, 
+        downloadLink, 
+        product.pdfFileName,
+        customerName,
+        product.vendorUrl
+      );
     } else {
        console.log("Payment succeeded but missing email or product ID in metadata");
     }
@@ -54,12 +62,20 @@ export async function POST(request: Request) {
     const session = event.data.object as any;
     
     const email = session.customer_details?.email;
+    const customerName = session.customer_details?.name || undefined;
     const productId = session.metadata?.productId;
     const product = products.find((p) => p.id === productId);
 
     if (email && product) {
       const downloadLink = `${process.env.NEXT_PUBLIC_URL}/access/${productId}`;
-      await sendOrderEmail(email, product.name, downloadLink);
+      await sendOrderEmail(
+        email, 
+        product.name, 
+        downloadLink, 
+        product.pdfFileName,
+        customerName,
+        product.vendorUrl
+      );
     }
   }
 

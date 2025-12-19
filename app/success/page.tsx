@@ -49,16 +49,32 @@ function SuccessContent() {
           <Check size={40} strokeWidth={3} />
         </div>
         
-        <h1 className="text-3xl font-bold mb-2">Payment Successful!</h1>
+        <h1 className="text-3xl font-bold mb-2">Payment Successful! 🎉</h1>
         <p className="text-neutral-400 mb-8">
-          Thank you for your purchase. Your vendor link has been sent to your email.
+          Thank you for your purchase! Your vendor link has been sent to your email.
         </p>
 
-        <div className="bg-neutral-900/50 p-4 rounded-xl border border-neutral-800 mb-8 text-sm text-neutral-300">
-          <p>Please check your inbox (and spam folder).</p>
-          <p className="mt-2 text-xs text-neutral-500">
-            If you don't see it within 5 minutes, verify your email on our Discord.
+        <div className="bg-blue-500/10 border border-blue-500/30 p-5 rounded-xl mb-6">
+          <p className="text-lg font-semibold text-blue-400 mb-2">📧 Check Your Email</p>
+          <p className="text-sm text-neutral-300 mb-1">
+            Your vendor link and instructions have been sent to your email address.
           </p>
+          <p className="text-xs text-neutral-400 mt-3">
+            <strong>Don't see it?</strong> Check your spam/junk folder. Emails usually arrive within 1-2 minutes.
+          </p>
+        </div>
+
+        <div className="bg-neutral-900/50 p-4 rounded-xl border border-neutral-800 mb-6 text-sm">
+          <p className="text-neutral-300 mb-2">Need help or have questions?</p>
+          <a 
+            href="https://discord.com/invite/PBEXChby4H"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+          >
+            Join our Discord Community
+            <ArrowRight size={16} />
+          </a>
         </div>
 
         <Link 

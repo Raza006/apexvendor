@@ -1,0 +1,47 @@
+📄 PDF INSTRUCTIONS FOR YOUR APEX VENDORS STORE
+================================================
+
+CURRENT STATUS:
+✅ elite-bundle-instructions.pdf - READY (for "Every Single Vendor" product)
+⚠️ clothing-instructions.pdf - NEEDED (for "Clothing Bundle Pack" product)
+
+---
+
+ONLY THESE 2 PRODUCTS WILL HAVE PDF ATTACHMENTS:
+1. Every Single Vendor (All Vendor Bundle) → elite-bundle-instructions.pdf
+2. Clothing Bundle Pack → clothing-instructions.pdf
+
+ALL OTHER PRODUCTS will receive emails WITHOUT PDF attachments.
+
+---
+
+TO ADD THE CLOTHING BUNDLE PDF:
+1. Create your clothing bundle instructions PDF
+2. Name it exactly: clothing-instructions.pdf
+3. Place it in this folder (public/pdfs/)
+
+---
+
+WHAT SHOULD BE IN THE PDF:
+- Product name and description
+- Step-by-step instructions on accessing the vendors
+- Vendor contact information (if applicable)
+- Your support contact information
+- Any important notes or tips
+
+---
+
+FILE REQUIREMENTS:
+- Format: PDF (.pdf)
+- Max size: 10MB (recommended under 5MB)
+- Filename must match exactly (case-sensitive)
+
+---
+
+AFTER ADDING THE PDF:
+1. Verify your domain in Resend (see NEXT_STEPS.md)
+2. Add DNS records to Cloudflare
+3. Update Vercel environment variables
+4. Redeploy on Vercel
+5. Test by making a purchase!
+
