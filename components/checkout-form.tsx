@@ -38,8 +38,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/success`,
-        receipt_email: email,
+        return_url: `${window.location.origin}/success?email=${encodeURIComponent(email)}`,
         payment_method_data: {
           billing_details: {
             email: email,
