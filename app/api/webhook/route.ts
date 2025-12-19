@@ -5,6 +5,8 @@ import { sendOrderEmail } from "@/lib/email-templates";
 import { products } from "@/lib/products";
 
 export async function POST(request: Request) {
+  console.log("🔔 WEBHOOK CALLED!");
+  
   const body = await request.text();
   const signature = (await headers()).get("Stripe-Signature") as string;
 
@@ -30,6 +32,9 @@ export async function POST(request: Request) {
     console.error(`Webhook Error: ${err.message}`);
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
   }
+
+  console.log("📨 Webhook Event Type:", event.type);
+  console.log("📨 Webhook Event ID:", event.id);
 
   // Handle PaymentIntent succeeded
   if (event.type === "payment_intent.succeeded") {
