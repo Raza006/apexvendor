@@ -22,6 +22,7 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
 
   useEffect(() => {
     // Create a PaymentIntent as soon as the component mounts
+    console.log("🚀 Creating payment intent for product:", product.id);
     setLoading(true);
     fetch("/api/create-payment-intent", {
       method: "POST",
@@ -34,11 +35,13 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log("✅ Payment intent response:", data);
+        console.log("🔑 Client secret:", data.clientSecret ? "EXISTS" : "MISSING");
         setClientSecret(data.clientSecret);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error creating payment intent:", err);
+        console.error("❌ Error creating payment intent:", err);
         setLoading(false);
       });
   }, [product.id]);
@@ -102,12 +105,19 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
         <h3 className="font-bold text-lg">Secure Checkout</h3>
       </div>
       
-      <div className="p-6 md:p-8"> {/* Increased padding for desktop */}
-        {clientSecret && (
+      <div className="p-6 md:p-8">
+        {!clientSecret && !loading && (
+          <div className="text-red-400 p-4 bg-red-500/10 rounded-lg">
+            ❌ Failed to initialize checkout. Check console for errors.
+          </div>
+        )}
+        {clientSecret ? (
           <Elements options={options} stripe={stripePromise}>
             <CheckoutForm amount={product.price} />
           </Elements>
-        )}
+        ) : loading ? (
+          <div className="text-center text-neutral-400">Loading payment form...</div>
+        ) : null}
       </div>
     </div>
   );
