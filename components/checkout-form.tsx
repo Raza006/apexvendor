@@ -34,17 +34,6 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/success`,
-        payment_method_data: {
-          billing_details: {
-            address: {
-              line1: 'N/A',
-              city: 'N/A',
-              state: 'NY',
-              postal_code: '10001',
-              country: 'US',
-            },
-          },
-        },
       },
     });
 
@@ -85,13 +74,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
                  name: 'auto',
                  email: 'auto',
                  phone: 'auto',
-                 address: 'never'
-               }
-             },
-             defaultValues: {
-               billingDetails: {
-                 name: '',
-                 email: ''
+                 address: 'auto'
                }
              },
              terms: {
