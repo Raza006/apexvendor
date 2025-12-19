@@ -37,7 +37,7 @@ export const products: Product[] = [
   {
     id: "labu",
     name: "Labu Supplier",
-    price: 0.01,
+    price: 0.50,
     originalPrice: 19.99,
     description: [
       "10 plus Days Shipping"
