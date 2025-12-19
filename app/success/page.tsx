@@ -8,15 +8,23 @@ import { Check, ArrowRight, Loader2 } from "lucide-react";
 function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
+  const paymentIntent = searchParams.get("payment_intent");
+  const redirectStatus = searchParams.get("redirect_status");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
 
   useEffect(() => {
-    if (!sessionId) {
+    // Check if we have either session_id (Checkout) or payment_intent (Payment Intent)
+    if (!sessionId && !paymentIntent) {
+      setStatus("error");
+      return;
+    }
+    // If we have payment_intent, check redirect_status
+    if (paymentIntent && redirectStatus !== "succeeded") {
       setStatus("error");
       return;
     }
     setStatus("success");
-  }, [sessionId]);
+  }, [sessionId, paymentIntent, redirectStatus]);
 
   if (status === "loading") {
     return (
