@@ -33,16 +33,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        // Make sure to change this to your payment completion page
         return_url: `${window.location.origin}/success`,
-        payment_method_data: {
-          billing_details: {
-            address: {
-              country: 'US', // Default to US since we're not collecting address
-              postal_code: '00000', // Default postal code
-            },
-          },
-        },
       },
     });
 
@@ -74,13 +65,16 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
            options={{ 
              layout: "tabs",
              business: { name: "Apex Vendor" },
+             wallets: {
+               applePay: 'auto',
+               googlePay: 'auto'
+             },
              fields: {
                billingDetails: {
-                 email: 'auto',    // Email will be collected
-                 phone: 'auto',    // Phone is optional
-                 address: {
-                   country: 'never', // Hide country selector (default to US)
-                 }
+                 name: 'auto',     // Collect name
+                 email: 'auto',    // Collect email - REQUIRED
+                 phone: 'never',   // Don't ask for phone
+                 address: 'never'  // No address
                }
              }
            }} 
