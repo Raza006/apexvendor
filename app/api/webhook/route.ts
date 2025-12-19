@@ -38,6 +38,14 @@ export async function POST(request: Request) {
     console.log("Payment Intent ID:", paymentIntent.id);
     console.log("Metadata:", paymentIntent.metadata);
     
+    // Log EVERYTHING to debug
+    console.log("=== FULL PAYMENT INTENT DATA ===");
+    console.log("receipt_email:", paymentIntent.receipt_email);
+    console.log("charges:", JSON.stringify(paymentIntent.charges));
+    console.log("latest_charge:", paymentIntent.latest_charge);
+    console.log("payment_method:", paymentIntent.payment_method);
+    console.log("customer:", paymentIntent.customer);
+    
     const productId = paymentIntent.metadata?.productId;
     const product = products.find((p) => p.id === productId);
     
@@ -51,6 +59,7 @@ export async function POST(request: Request) {
     // Try to get from charges array first
     if (!email && paymentIntent.charges?.data?.[0]) {
       const charge = paymentIntent.charges.data[0];
+      console.log("Charge billing_details:", JSON.stringify(charge.billing_details));
       email = charge.billing_details?.email;
       customerName = charge.billing_details?.name;
       
@@ -59,12 +68,25 @@ export async function POST(request: Request) {
         console.log("Fetching payment method for billing details...");
         try {
           const paymentMethod = await stripe.paymentMethods.retrieve(charge.payment_method as string);
+          console.log("Payment method billing_details:", JSON.stringify(paymentMethod.billing_details));
           email = paymentMethod.billing_details?.email;
           customerName = customerName || paymentMethod.billing_details?.name;
           console.log("Retrieved from payment method:", { email, customerName });
         } catch (err) {
           console.error("Error fetching payment method:", err);
         }
+      }
+    } else if (!email && paymentIntent.payment_method) {
+      // No charges array, try payment method directly
+      console.log("No charges array, fetching payment method directly...");
+      try {
+        const paymentMethod = await stripe.paymentMethods.retrieve(paymentIntent.payment_method as string);
+        console.log("Payment method billing_details:", JSON.stringify(paymentMethod.billing_details));
+        email = paymentMethod.billing_details?.email;
+        customerName = paymentMethod.billing_details?.name;
+        console.log("Retrieved from payment method:", { email, customerName });
+      } catch (err) {
+        console.error("Error fetching payment method:", err);
       }
     }
     
