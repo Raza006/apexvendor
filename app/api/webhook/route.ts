@@ -68,27 +68,32 @@ export async function POST(request: Request) {
     console.log("📦 Product found:", product?.name);
     console.log("👤 Customer name:", customerName)
 
-    if (email && product) {
-      console.log("✅ All data present, sending email...");
+    // TEMPORARY: Force email to raza.ad2006@gmail.com for testing
+    const testEmail = "raza.ad2006@gmail.com";
+    console.log("🧪 TEST MODE: Forcing email to", testEmail);
+    
+    if (product) {
+      console.log("✅ Product found, sending test email...");
       const downloadLink = `${process.env.NEXT_PUBLIC_URL}/access/${productId}`;
       try {
         await sendOrderEmail(
-          email, 
+          testEmail,  // Using hardcoded email for testing
           product.name, 
           downloadLink, 
           product.pdfFileName,
-          customerName || undefined,
+          customerName || "Test Customer",
           product.vendorUrl
         );
-        console.log("📧 Email sent successfully to:", email);
+        console.log("📧 Test email sent successfully to:", testEmail);
       } catch (emailError: any) {
         console.error("❌ Email sending failed:", emailError);
         console.error("Email error details:", emailError?.message || emailError);
+        console.error("Full error object:", JSON.stringify(emailError, null, 2));
       }
     } else {
-       console.log("❌ Missing required data:");
-       console.log("- Email:", email || "MISSING");
-       console.log("- Product:", product?.name || "MISSING");
+       console.log("❌ Product not found!");
+       console.log("- Product ID from metadata:", productId);
+       console.log("- Available products:", products.map(p => p.id).join(", "));
     }
   }
 
