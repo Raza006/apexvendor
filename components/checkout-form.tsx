@@ -64,7 +64,18 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
            onReady={() => setIsFormReady(true)}
            options={{ 
              layout: "tabs",
-             business: { name: "Apex Vendor" }
+             business: { name: "Apex Vendor" },
+             fields: {
+               billingDetails: {
+                 email: 'auto',
+                 name: 'auto',
+                 phone: 'auto',
+                 address: {
+                   country: 'never',
+                   postalCode: 'auto'
+                 }
+               }
+             }
            }} 
         />
       </div>
