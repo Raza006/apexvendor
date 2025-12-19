@@ -44,6 +44,9 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
           billing_details: {
             email: email,
             name: name || undefined,
+            address: {
+              country: 'US',
+            },
           },
         },
       },
@@ -98,11 +101,18 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
           id="payment-element"
           options={{ 
             layout: "tabs",
+            terms: {
+              card: 'never'
+            },
             fields: {
               billingDetails: {
                 email: 'never',
                 address: 'never'
               }
+            },
+            wallets: {
+              applePay: 'never',
+              googlePay: 'never'
             }
           }} 
         />
