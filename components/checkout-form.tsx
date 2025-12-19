@@ -34,6 +34,13 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
       confirmParams: {
         // Make sure to change this to your payment completion page
         return_url: `${window.location.origin}/success`,
+        payment_method_data: {
+          billing_details: {
+            address: {
+              country: 'US', // Default to US since we're not collecting address
+            },
+          },
+        },
       },
     });
 
