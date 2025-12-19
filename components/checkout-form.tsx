@@ -98,6 +98,12 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
           id="payment-element"
           options={{ 
             layout: "tabs",
+            fields: {
+              billingDetails: {
+                email: 'never',
+                address: 'never'
+              }
+            }
           }} 
         />
       </div>
