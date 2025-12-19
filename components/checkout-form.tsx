@@ -18,6 +18,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
 
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFormReady, setIsFormReady] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,9 +60,17 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
 
   return (
     <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
+      {!isFormReady && (
+        <div className="space-y-4 animate-pulse">
+          <div className="h-12 bg-neutral-800 rounded-lg"></div>
+          <div className="h-12 bg-neutral-800 rounded-lg"></div>
+          <div className="h-12 bg-neutral-800 rounded-lg"></div>
+        </div>
+      )}
+      <div className={`space-y-4 ${!isFormReady ? 'hidden' : ''}`}>
         <PaymentElement 
-           id="payment-element" 
+           id="payment-element"
+           onReady={() => setIsFormReady(true)}
            options={{ 
              layout: "tabs",
              business: { name: "Apex Vendor" },
@@ -86,11 +95,16 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
       )}
 
       <button
-        disabled={isLoading || !stripe || !elements}
+        disabled={isLoading || !stripe || !elements || !isFormReady}
         id="submit"
         className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]"
       >
-        {isLoading ? (
+        {!isFormReady ? (
+          <>
+            <Loader2 className="animate-spin" size={20} />
+            Loading...
+          </>
+        ) : isLoading ? (
           <>
             <Loader2 className="animate-spin" size={20} />
             Processing...
