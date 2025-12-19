@@ -31,70 +31,35 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
   }
 
-  // Handle raw PaymentIntent (Custom Element) OR Checkout Session (old embedded)
+  // Handle PaymentIntent succeeded
   if (event.type === "payment_intent.succeeded") {
     console.log("🎉 Payment Intent Succeeded!");
     const paymentIntent = event.data.object as any;
     console.log("Payment Intent ID:", paymentIntent.id);
-    console.log("Metadata:", paymentIntent.metadata);
     
-    // Log EVERYTHING to debug
-    console.log("=== FULL PAYMENT INTENT DATA ===");
-    console.log("receipt_email:", paymentIntent.receipt_email);
-    console.log("charges:", JSON.stringify(paymentIntent.charges));
-    console.log("latest_charge:", paymentIntent.latest_charge);
-    console.log("payment_method:", paymentIntent.payment_method);
-    console.log("customer:", paymentIntent.customer);
-    
+    // Get email - should be in receipt_email since we pass it in confirmPayment
+    const email = paymentIntent.receipt_email;
     const productId = paymentIntent.metadata?.productId;
     const product = products.find((p) => p.id === productId);
     
-    console.log("Product ID:", productId);
-    console.log("Product found:", product?.name);
+    console.log("📧 Email from receipt_email:", email);
+    console.log("📦 Product ID:", productId);
+    console.log("📦 Product found:", product?.name);
     
-    // Get email from billing details
-    let email = paymentIntent.receipt_email;
+    // Try to get name from latest charge
     let customerName;
-    
-    // Try to get from charges array first
-    if (!email && paymentIntent.charges?.data?.[0]) {
-      const charge = paymentIntent.charges.data[0];
-      console.log("Charge billing_details:", JSON.stringify(charge.billing_details));
-      email = charge.billing_details?.email;
-      customerName = charge.billing_details?.name;
-      
-      // If still no email, try to fetch the payment method
-      if (!email && charge.payment_method) {
-        console.log("Fetching payment method for billing details...");
-        try {
-          const paymentMethod = await stripe.paymentMethods.retrieve(charge.payment_method as string);
-          console.log("Payment method billing_details:", JSON.stringify(paymentMethod.billing_details));
-          email = paymentMethod.billing_details?.email;
-          customerName = customerName || paymentMethod.billing_details?.name;
-          console.log("Retrieved from payment method:", { email, customerName });
-        } catch (err) {
-          console.error("Error fetching payment method:", err);
-        }
-      }
-    } else if (!email && paymentIntent.payment_method) {
-      // No charges array, try payment method directly
-      console.log("No charges array, fetching payment method directly...");
+    if (paymentIntent.latest_charge) {
       try {
-        const paymentMethod = await stripe.paymentMethods.retrieve(paymentIntent.payment_method as string);
-        console.log("Payment method billing_details:", JSON.stringify(paymentMethod.billing_details));
-        email = paymentMethod.billing_details?.email;
-        customerName = paymentMethod.billing_details?.name;
-        console.log("Retrieved from payment method:", { email, customerName });
+        const charge = await stripe.charges.retrieve(paymentIntent.latest_charge as string);
+        customerName = charge.billing_details?.name;
+        console.log("👤 Customer name:", customerName);
       } catch (err) {
-        console.error("Error fetching payment method:", err);
+        console.error("Error fetching charge:", err);
       }
     }
-    
-    console.log("Final email found:", email);
-    console.log("Final customer name:", customerName);
 
     if (email && product) {
-      console.log("✅ Sending email to:", email);
+      console.log("✅ All data present, sending email...");
       const downloadLink = `${process.env.NEXT_PUBLIC_URL}/access/${productId}`;
       await sendOrderEmail(
         email, 
@@ -104,12 +69,11 @@ export async function POST(request: Request) {
         customerName,
         product.vendorUrl
       );
-      console.log("📧 Email sent successfully!");
+      console.log("📧 Email sent successfully to:", email);
     } else {
-       console.log("❌ Payment succeeded but missing data:");
-       console.log("- Email:", email ? "✅" : "❌");
-       console.log("- Product:", product ? "✅" : "❌");
-       console.log("- Product ID in metadata:", productId ? "✅" : "❌");
+       console.log("❌ Missing required data:");
+       console.log("- Email:", email || "MISSING");
+       console.log("- Product:", product?.name || "MISSING");
     }
   }
 

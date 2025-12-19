@@ -6,7 +6,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { Loader2, Lock, AlertCircle } from "lucide-react";
+import { Loader2, Lock, AlertCircle, Mail } from "lucide-react";
 
 interface CheckoutFormProps {
   amount: number;
@@ -16,6 +16,8 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
 
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,12 +28,24 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
       return;
     }
 
+    if (!email) {
+      setMessage("Please enter your email address");
+      return;
+    }
+
     setIsLoading(true);
 
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/success`,
+        receipt_email: email,
+        payment_method_data: {
+          billing_details: {
+            email: email,
+            name: name || undefined,
+          },
+        },
       },
     });
 
@@ -43,18 +57,50 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
   };
 
   return (
-    <form id="payment-form" onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement 
-        id="payment-element"
-        options={{ 
-          layout: "tabs",
-          defaultValues: {
-            billingDetails: {
-              email: '',
-            }
-          }
-        }} 
-      />
+    <form id="payment-form" onSubmit={handleSubmit} className="space-y-4">
+      {/* Email Field - REQUIRED */}
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+          Email Address <span className="text-red-400">*</span>
+        </label>
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="email"
+            id="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="your@email.com"
+            className="w-full pl-11 pr-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      {/* Name Field - OPTIONAL */}
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
+          Full Name <span className="text-gray-500 text-xs">(Optional)</span>
+        </label>
+        <input
+          type="text"
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="John Doe"
+          className="w-full px-4 py-3 bg-neutral-800/50 border border-neutral-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        />
+      </div>
+
+      {/* Stripe Payment Element */}
+      <div className="pt-2">
+        <PaymentElement 
+          id="payment-element"
+          options={{ 
+            layout: "tabs",
+          }} 
+        />
+      </div>
 
       {message && (
         <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center gap-2 text-red-400 text-sm">
@@ -64,7 +110,7 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
       )}
 
       <button
-        disabled={isLoading || !stripe || !elements}
+        disabled={isLoading || !stripe || !elements || !email}
         id="submit"
         className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)]"
       >
