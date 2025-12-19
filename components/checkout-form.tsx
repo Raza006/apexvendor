@@ -37,8 +37,11 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
         payment_method_data: {
           billing_details: {
             address: {
+              line1: 'N/A',
+              city: 'N/A',
+              state: 'NY',
+              postal_code: '10001',
               country: 'US',
-              postal_code: '00000',
             },
           },
         },
