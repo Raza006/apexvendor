@@ -56,7 +56,14 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
            id="payment-element" 
            options={{ 
              layout: "tabs",
-             business: { name: "Apex Vendor" } 
+             business: { name: "Apex Vendor" },
+             fields: {
+               billingDetails: {
+                 email: 'always',  // Email is required
+                 phone: 'auto',    // Phone is optional
+                 address: 'never'  // No address needed
+               }
+             }
            }} 
         />
       </div>
