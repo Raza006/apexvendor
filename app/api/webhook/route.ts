@@ -44,14 +44,27 @@ export async function POST(request: Request) {
     console.log("Product ID:", productId);
     console.log("Product found:", product?.name);
     
-    // PaymentIntent doesn't always have email directly on it if not collected via Link or customer object
-    // But we can try to get receipt_email
-    const email = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email;
-    const customerName = paymentIntent.charges?.data?.[0]?.billing_details?.name || undefined;
+    // Get the latest charge to extract billing details
+    let email = paymentIntent.receipt_email;
+    let customerName;
     
-    console.log("Email found:", email);
-    console.log("Customer name:", customerName);
-    console.log("Billing details:", JSON.stringify(paymentIntent.charges?.data?.[0]?.billing_details));
+    // If no receipt_email, we need to fetch the charge with expanded payment_method
+    if (!email && paymentIntent.latest_charge) {
+      console.log("Fetching charge details for email...");
+      try {
+        const charge = await stripe.charges.retrieve(paymentIntent.latest_charge as string, {
+          expand: ['payment_method'],
+        });
+        email = charge.billing_details?.email || (charge.payment_method as any)?.billing_details?.email;
+        customerName = charge.billing_details?.name || (charge.payment_method as any)?.billing_details?.name;
+        console.log("Retrieved from charge:", { email, customerName });
+      } catch (err) {
+        console.error("Error fetching charge:", err);
+      }
+    }
+    
+    console.log("Final email found:", email);
+    console.log("Final customer name:", customerName);
 
     if (email && product) {
       console.log("✅ Sending email to:", email);
