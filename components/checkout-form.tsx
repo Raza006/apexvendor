@@ -34,6 +34,13 @@ export function CheckoutForm({ amount }: CheckoutFormProps) {
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/success`,
+        payment_method_data: {
+          billing_details: {
+            address: {
+              country: 'US',
+            },
+          },
+        },
       },
     });
 
