@@ -33,16 +33,28 @@ export async function POST(request: Request) {
 
   // Handle raw PaymentIntent (Custom Element) OR Checkout Session (old embedded)
   if (event.type === "payment_intent.succeeded") {
+    console.log("🎉 Payment Intent Succeeded!");
     const paymentIntent = event.data.object as any;
+    console.log("Payment Intent ID:", paymentIntent.id);
+    console.log("Metadata:", paymentIntent.metadata);
+    
     const productId = paymentIntent.metadata?.productId;
     const product = products.find((p) => p.id === productId);
+    
+    console.log("Product ID:", productId);
+    console.log("Product found:", product?.name);
     
     // PaymentIntent doesn't always have email directly on it if not collected via Link or customer object
     // But we can try to get receipt_email
     const email = paymentIntent.receipt_email || paymentIntent.charges?.data?.[0]?.billing_details?.email;
     const customerName = paymentIntent.charges?.data?.[0]?.billing_details?.name || undefined;
+    
+    console.log("Email found:", email);
+    console.log("Customer name:", customerName);
+    console.log("Billing details:", JSON.stringify(paymentIntent.charges?.data?.[0]?.billing_details));
 
     if (email && product) {
+      console.log("✅ Sending email to:", email);
       const downloadLink = `${process.env.NEXT_PUBLIC_URL}/access/${productId}`;
       await sendOrderEmail(
         email, 
@@ -52,8 +64,12 @@ export async function POST(request: Request) {
         customerName,
         product.vendorUrl
       );
+      console.log("📧 Email sent successfully!");
     } else {
-       console.log("Payment succeeded but missing email or product ID in metadata");
+       console.log("❌ Payment succeeded but missing data:");
+       console.log("- Email:", email ? "✅" : "❌");
+       console.log("- Product:", product ? "✅" : "❌");
+       console.log("- Product ID in metadata:", productId ? "✅" : "❌");
     }
   }
 
