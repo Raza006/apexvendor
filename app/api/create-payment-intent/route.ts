@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { productId } = body;
-    
+
     console.log("🛒 Creating payment intent for product:", productId);
 
     const product = products.find((p) => p.id === productId);
@@ -24,11 +24,6 @@ export async function POST(request: Request) {
       currency: "usd",
       automatic_payment_methods: {
         enabled: true,
-      },
-      payment_method_options: {
-        card: {
-          capture_method: 'automatic',
-        },
       },
       metadata: {
         productId: product.id,
