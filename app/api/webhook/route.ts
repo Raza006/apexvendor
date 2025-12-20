@@ -51,9 +51,7 @@ export async function POST(request: Request) {
     // ALWAYS try to get from latest charge billing_details
     if (paymentIntent.latest_charge) {
       try {
-        const charge = await stripe.charges.retrieve(paymentIntent.latest_charge as string, {
-          expand: ['payment_method']
-        });
+        const charge = await stripe.charges.retrieve(paymentIntent.latest_charge as string);
         console.log("📧 Step 2 - Charge retrieved successfully");
         console.log("📧 Charge billing_details:", JSON.stringify(charge.billing_details));
         
@@ -79,32 +77,29 @@ export async function POST(request: Request) {
     console.log("📦 Product found:", product?.name);
     console.log("👤 FINAL Customer name:", customerName || "NOT FOUND")
 
-    // TEMPORARY: Force email to raza.ad2006@gmail.com for testing
-    const testEmail = "raza.ad2006@gmail.com";
-    console.log("🧪 TEST MODE: Forcing email to", testEmail);
-    
-    if (product) {
-      console.log("✅ Product found, sending test email...");
+    if (email && product) {
+      console.log("✅ All data present, sending email...");
       const downloadLink = `${process.env.NEXT_PUBLIC_URL}/access/${productId}`;
       try {
         await sendOrderEmail(
-          testEmail,  // Using hardcoded email for testing
+          email,
           product.name, 
           downloadLink, 
           product.pdfFileName,
-          customerName || "Test Customer",
+          customerName || "Valued Customer",
           product.vendorUrl
         );
-        console.log("📧 Test email sent successfully to:", testEmail);
+        console.log("📧 Email sent successfully to:", email);
       } catch (emailError: any) {
         console.error("❌ Email sending failed:", emailError);
         console.error("Email error details:", emailError?.message || emailError);
         console.error("Full error object:", JSON.stringify(emailError, null, 2));
       }
     } else {
-       console.log("❌ Product not found!");
+       console.log("❌ Missing required data:");
+       console.log("- Email:", email || "MISSING");
+       console.log("- Product:", product?.name || "MISSING");
        console.log("- Product ID from metadata:", productId);
-       console.log("- Available products:", products.map(p => p.id).join(", "));
     }
   }
 
