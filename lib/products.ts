@@ -13,7 +13,7 @@ export const products: Product[] = [
   {
     id: "elite-bundle",
     name: "Every Single Vendor",
-    price: 0.50,
+    price: 29.99,
     originalPrice: 79.99,
     description: [
       "20+ Suppliers",
@@ -37,7 +37,7 @@ export const products: Product[] = [
   {
     id: "labu",
     name: "Labu Supplier",
-    price: 0.50,
+    price: 9.99,
     originalPrice: 19.99,
     description: [
       "10 plus Days Shipping"
