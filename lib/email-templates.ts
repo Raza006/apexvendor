@@ -89,8 +89,8 @@ export async function sendOrderEmail(
     console.log("📤 Product:", productName);
 
     // Prepare email options
-    // NOTE: Using onboarding@resend.dev temporarily until apexsupplierlinks.com is verified
-    // To use your custom domain, verify it with Resend first (see EMAIL_SETUP_GUIDE.md)
+    // Using onboarding@resend.dev (Resend's test domain) until you verify apexsupplierlinks.com
+    // To use orders@apexsupplierlinks.com, verify your domain at: https://resend.com/domains
     const emailOptions: any = {
       from: 'Apex Vendors <onboarding@resend.dev>',
       to: email,
