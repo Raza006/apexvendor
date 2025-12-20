@@ -2,7 +2,7 @@
 
 import { Product } from "@/lib/products";
 import { Loader2, Zap } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { CheckoutForm } from "./checkout-form";
@@ -19,11 +19,16 @@ interface InlineCheckoutProps {
 export function InlineCheckout({ product }: InlineCheckoutProps) {
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkoutInitiated, setCheckoutInitiated] = useState(false);
 
-  useEffect(() => {
-    // Create a PaymentIntent as soon as the component mounts
-    console.log("🚀 Creating payment intent for product:", product.id);
+  // Only create payment intent when user initiates checkout
+  const initializeCheckout = () => {
+    if (checkoutInitiated || clientSecret) return; // Prevent duplicate calls
+    
+    setCheckoutInitiated(true);
+    console.log("🚀 User initiated checkout - creating payment intent for product:", product.id);
     setLoading(true);
+    
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: {
@@ -43,8 +48,9 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
       .catch((err) => {
         console.error("❌ Error creating payment intent:", err);
         setLoading(false);
+        setCheckoutInitiated(false); // Allow retry on error
       });
-  }, [product.id]);
+  };
 
   // Custom styling to match "Apex Vendor" theme perfectly
   const appearance: Appearance = {
@@ -106,12 +112,25 @@ export function InlineCheckout({ product }: InlineCheckoutProps) {
       </div>
       
       <div className="p-6 md:p-8">
-        {!clientSecret && !loading && (
+        {!checkoutInitiated ? (
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-neutral-400 text-center">Ready to get instant access to verified vendors?</p>
+            <button
+              onClick={initializeCheckout}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-lg shadow-lg hover:shadow-xl hover:scale-[1.02]"
+            >
+              <Zap size={20} className="fill-white" />
+              Continue to Payment
+            </button>
+            <p className="text-xs text-neutral-500 text-center">
+              🔒 Secure payment powered by Stripe
+            </p>
+          </div>
+        ) : !clientSecret && !loading && checkoutInitiated ? (
           <div className="text-red-400 p-4 bg-red-500/10 rounded-lg">
             ❌ Failed to initialize checkout. Check console for errors.
           </div>
-        )}
-        {clientSecret ? (
+        ) : clientSecret ? (
           <Elements options={options} stripe={stripePromise}>
             <CheckoutForm amount={product.price} clientSecret={clientSecret} />
           </Elements>
