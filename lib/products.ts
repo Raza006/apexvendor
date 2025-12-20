@@ -13,7 +13,7 @@ export const products: Product[] = [
   {
     id: "elite-bundle",
     name: "Every Single Vendor",
-    price: 29.99,
+    price: 0.50,
     originalPrice: 79.99,
     description: [
       "20+ Suppliers",
