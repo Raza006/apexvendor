@@ -127,6 +127,10 @@ export function CheckoutForm({ amount, clientSecret }: CheckoutFormProps) {
                   postalCode: 'auto'
                 }
               }
+            },
+            wallets: {
+              applePay: 'auto',
+              googlePay: 'auto'
             }
           }} 
         />
