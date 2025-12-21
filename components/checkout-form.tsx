@@ -116,9 +116,6 @@ export function CheckoutForm({ amount, clientSecret }: CheckoutFormProps) {
           id="payment-element"
           options={{ 
             layout: "tabs",
-            terms: {
-              card: 'never'
-            },
             fields: {
               billingDetails: {
                 email: 'never',
@@ -127,10 +124,6 @@ export function CheckoutForm({ amount, clientSecret }: CheckoutFormProps) {
                   postalCode: 'auto'
                 }
               }
-            },
-            wallets: {
-              applePay: 'auto',
-              googlePay: 'auto'
             }
           }} 
         />
