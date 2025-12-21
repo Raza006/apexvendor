@@ -129,8 +129,8 @@ export function CheckoutForm({ amount, clientSecret }: CheckoutFormProps) {
               }
             },
             wallets: {
-              applePay: 'always',
-              googlePay: 'always'
+              applePay: 'auto',
+              googlePay: 'auto'
             }
           }} 
         />
