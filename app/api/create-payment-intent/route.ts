@@ -24,7 +24,6 @@ export async function POST(request: Request) {
       currency: "usd",
       automatic_payment_methods: {
         enabled: true,
-        allow_redirects: 'never', // This helps ensure wallets like Apple Pay work properly
       },
       metadata: {
         productId: product.id,
