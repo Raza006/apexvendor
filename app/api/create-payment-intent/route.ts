@@ -25,6 +25,7 @@ export async function POST(request: Request) {
       automatic_payment_methods: {
         enabled: true,
       },
+      capture_method: 'automatic',
       metadata: {
         productId: product.id,
         productName: product.name,
