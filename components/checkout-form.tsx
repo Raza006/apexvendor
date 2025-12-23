@@ -114,25 +114,6 @@ export function CheckoutForm({ amount, clientSecret }: CheckoutFormProps) {
       <div className="pt-2">
         <PaymentElement 
           id="payment-element"
-          options={{ 
-            layout: "tabs",
-            terms: {
-              card: 'never'
-            },
-            fields: {
-              billingDetails: {
-                email: 'never',
-                address: {
-                  country: 'auto',
-                  postalCode: 'auto'
-                }
-              }
-            },
-            wallets: {
-              applePay: 'auto',
-              googlePay: 'auto'
-            }
-          }} 
         />
       </div>
 
